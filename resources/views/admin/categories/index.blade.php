@@ -48,7 +48,7 @@
                             {{ $category->name }}
                         </td>
                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                           {{ $category->created_at?->format('d/m/Y') }}
+                            {{ $category->created_at?->format('d/m/Y') }}
                         </td>
                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                             <form action="{{ route('admin.categories.destroy', $category) }}" method="POST"
