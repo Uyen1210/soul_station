@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\Category;
 
 class DatabaseSeeder extends Seeder
 {
@@ -37,6 +38,21 @@ class DatabaseSeeder extends Seeder
             'role' => 'user',
             'status' => 'active',
         ]);
+
+        $categories = [
+            ['name' => 'Kinh dị'],
+            ['name' => 'Trinh thám '],
+            ['name' => 'Văn học nước ngoài'],
+            ['name' => 'Văn học Việt Nam'],
+            ['name' => 'Kỹ năng sống'],
+            ['name' => 'Tâm lý học'],
+            ['name' => 'Khoa học viễn tưởng'],
+            ['name' => 'Lịch sử & Địa lý'],
+            ['name' => 'Sách Ngoại ngữ'],
+            ['name' => 'Truyện tranh & Manga'],
+        ];
+
+        Category::insert($categories);
 
     }
 }

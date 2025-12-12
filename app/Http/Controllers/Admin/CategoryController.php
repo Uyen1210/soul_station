@@ -10,7 +10,7 @@ class CategoryController extends Controller
 {
     public function index()
     {
-        $categories = Category::orderBy('name')->get();
+        $categories = Category::latest()->paginate(10);
         return view('admin.categories.index', compact('categories'));
     }
 
@@ -25,7 +25,7 @@ class CategoryController extends Controller
 
         Category::create(['name' => $request->name]);
 
-        return redirect()->route('categories.index')->with('success', 'Danh mục đã được tạo!');
+        return redirect()->route('admin.categories.index')->with('success', 'Danh mục đã được tạo!');
     }
 
     public function edit(Category $category)
@@ -45,6 +45,6 @@ class CategoryController extends Controller
     public function destroy(Category $category)
     {
         $category->delete();
-        return back()->with('success', 'Đã xóa danh mục!');
+        return redirect()->route('admin.categories.index')->with('success', 'Đã xóa danh mục!');
     }
 }
