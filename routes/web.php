@@ -72,3 +72,15 @@ Route::get('/force-logout', function () {
     session()->regenerateToken();
     return redirect('/login');
 });
+
+// ly
+use App\Http\Controllers\HomeController;
+
+// Ai cũng xem được
+Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/sach/{id}', [HomeController::class, 'detail'])->name('book.detail');
+// Route xử lý mượn sách
+Route::post('/borrow/{id}', [HomeController::class, 'borrow'])->middleware('auth')->name('book.borrow');
+
+// Phải đăng nhập mới xem được
+Route::get('/lich-su', [HomeController::class, 'history'])->middleware('auth')->name('history');
