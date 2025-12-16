@@ -1,0 +1,94 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\Book;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+
+class HomeController extends Controller
+{
+    // 1. Trang chủ + Tìm kiếm Nâng cao
+    public function index(Request $request)
+    {
+        // Khởi tạo truy vấn
+        // with(['author', 'category']): Kỹ thuật Eager Loading giúp lấy luôn tên Tác giả/Thể loại đi kèm (giúp web chạy nhanh hơn)
+        $query = Book::with(['author', 'category']);
+
+        // Nếu người dùng có nhập từ khóa tìm kiếm
+        if ($request->filled('search')) {
+            $keyword = $request->search;
+
+            $query->where(function($q) use ($keyword) {
+                // 1. Tìm trong cột Tên sách
+                $q->where('title', 'LIKE', "%{$keyword}%")
+                
+                // 2. HOẶC tìm trong bảng Authors (dựa vào hàm author() bạn vừa khai báo)
+                  ->orWhereHas('author', function($qAuthor) use ($keyword) {
+                      $qAuthor->where('name', 'LIKE', "%{$keyword}%");
+                  })
+                  
+                // 3. HOẶC tìm trong bảng Categories (dựa vào hàm category() bạn vừa khai báo)
+                  ->orWhereHas('category', function($qCat) use ($keyword) {
+                      $qCat->where('name', 'LIKE', "%{$keyword}%");
+                  });
+            });
+        }
+
+        // Lấy danh sách mới nhất + Phân trang 8 cuốn
+        $books = $query->latest()->paginate(8);
+        
+        // Giữ lại từ khóa trên thanh URL khi bấm chuyển trang
+        $books->appends(['search' => $request->search]);
+
+        return view('welcome', compact('books'));
+    }
+
+    // 2. Chi tiết sách
+    public function detail($id)
+    {
+        $book = Book::with(['author', 'category'])->findOrFail($id);
+        return view('detail', compact('book'));
+    }
+
+    // 3. Xử lý Mượn sách
+    public function borrow($id)
+    {
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+
+        $book = Book::find($id);
+        if($book->quantity > 0) {
+            $book->decrement('quantity');
+            
+            DB::table('borrows')->insert([
+                'user_id' => Auth::id(),
+                'book_id' => $id,
+                'borrow_date' => now(),
+                'due_date' => now()->addDays(7),
+                'status' => 'pending', // Hoặc 'borrowed' tùy database bạn sửa lúc nãy
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            return redirect()->route('history')->with('success', 'Đăng ký mượn thành công!');
+        } else {
+            return back()->with('error', 'Sách này đã hết!');
+        }
+    }
+
+    // 4. Lịch sử mượn
+    public function history()
+    {
+        $borrows = DB::table('borrows')
+            ->join('books', 'borrows.book_id', '=', 'books.id')
+            ->where('user_id', Auth::id())
+            ->select('books.title', 'borrows.*')
+            ->orderByDesc('borrows.created_at')
+            ->get();
+
+        return view('history', compact('borrows'));
+    }
+}

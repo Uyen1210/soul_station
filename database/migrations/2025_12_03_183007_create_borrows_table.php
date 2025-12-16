@@ -17,11 +17,13 @@ return new class extends Migration {
             $table->date('borrow_date')->nullable();
             $table->date('due_date')->nullable();
             $table->date('real_return_date')->nullable();
-            $table->enum('status', ['pending', 'borrowed', 'returned', 'late'])->default('pending');
+            
+            // ĐÃ SỬA: Dùng string để thoải mái lưu chữ gì cũng được
+            $table->string('status')->default('pending'); 
+            
             $table->timestamps();
         });
     }
-
     /**
      * Reverse the migrations.
      */
