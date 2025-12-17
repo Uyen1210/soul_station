@@ -46,7 +46,6 @@ class CategoryController extends Controller
     {
         $category = Category::findOrFail($id);
 
-        // KIỂM TRA: Nếu danh mục này đang có sách -> Chặn không cho xóa
         if ($category->books()->count() > 0) {
             return back()->with('error', 'Không thể xóa! Danh mục này đang chứa sách.');
         }

@@ -30,10 +30,9 @@ class BorrowAdminController extends Controller
     {
         $borrow = Borrow::findOrFail($id);
 
-        // Tính toán trễ hạn
         $status = 'returned';
         if (now() > $borrow->due_date) {
-            $status = 'late'; // Quá hạn
+            $status = 'late';
         }
 
         $borrow->update([
@@ -41,7 +40,7 @@ class BorrowAdminController extends Controller
             'real_return_date' => now(),
         ]);
 
-        $borrow->book->increment('quantity'); // Cộng lại kho 1 cuốn
+        $borrow->book->increment('quantity');
 
         return back()->with('success', 'Đã trả sách thành công!');
     }

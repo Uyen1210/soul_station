@@ -4,7 +4,6 @@
 
 @section('content')
 
-    {{-- === PHẦN THÊM MỚI: HIỂN THỊ THÔNG BÁO === --}}
     <div class="mb-4">
         @if(session('success'))
             <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded shadow-sm" role="alert">
@@ -20,7 +19,6 @@
             </div>
         @endif
     </div>
-    {{-- ========================================== --}}
 
     <div class="mb-6 flex justify-between items-center">
         <h1 class="text-2xl font-bold text-gray-700">Danh mục Sách</h1>
@@ -67,7 +65,6 @@
                             {{ $category->name }}
                         </td>
 
-                        {{-- Hiển thị số lượng sách đang có trong danh mục --}}
                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                             <span
                                 class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $category->books_count > 0 ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800' }}">

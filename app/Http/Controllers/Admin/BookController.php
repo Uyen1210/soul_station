@@ -104,7 +104,6 @@ class BookController extends Controller
             'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        // 2. Chuẩn bị dữ liệu update
         $data = [
             'title' => $request->title,
             'category_id' => $request->category_id,
@@ -113,17 +112,13 @@ class BookController extends Controller
             'description' => $request->description,
         ];
 
-        // 3. Xử lý ảnh mới (nếu có upload ảnh mới)
         if ($request->hasFile('cover_image')) {
-            // Xóa ảnh cũ nếu có
             if ($book->cover_image && Storage::disk('public')->exists($book->cover_image)) {
                 Storage::disk('public')->delete($book->cover_image);
             }
-            // Lưu ảnh mới
             $data['cover_image'] = $request->file('cover_image')->store('books', 'public');
         }
 
-        // 4. Update
         $book->update($data);
 
         return redirect()->route('admin.books.index')->with('success', 'Cập nhật sách thành công!');
@@ -136,7 +131,6 @@ class BookController extends Controller
     {
         $book = Book::findOrFail($id);
 
-        // Xóa ảnh bìa trong folder storage nếu có
         if ($book->cover_image && Storage::disk('public')->exists($book->cover_image)) {
             Storage::disk('public')->delete($book->cover_image);
         }
