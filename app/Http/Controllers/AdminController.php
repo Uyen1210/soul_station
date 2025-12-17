@@ -5,28 +5,38 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Book;
 use App\Models\Borrow;
+use Carbon\Carbon; // <--- MỚI: Thêm cái này để xử lý ngày tháng
 
 class AdminController extends Controller
 {
-    // 1. Dashboard (Thống kê)
+    // 1. Dashboard (Thống kê nâng cao)
     public function dashboard()
     {
-        $users = User::count();
+        // Đếm tổng sách
         $books = Book::count();
+
+        // Đếm User (Chỉ đếm khách, không đếm Admin)
+        $users = User::where('role', 'user')->count();
+
+        // Đếm sách đang mượn
         $borrowing = Borrow::where('status', 'borrowed')->count();
-        $pending = Borrow::where('status', 'pending')->count();
+
+        // Đếm sách quá hạn (Đang mượn nhưng quá ngày hẹn HOẶC đã bị đánh dấu late)
+        $late = Borrow::where('status', 'borrowed')
+                      ->where('due_date', '<', Carbon::now())
+                      ->count();
+        $late += Borrow::where('status', 'late')->count();
+
+        // Lấy 5 đơn mới nhất
         $recentRequests = Borrow::with(['user', 'book'])->latest()->limit(5)->get();
 
-        return view('admin.dashboard', compact('users', 'books', 'borrowing', 'pending', 'recentRequests'));
+        return view('admin.dashboard', compact('users', 'books', 'borrowing', 'late', 'recentRequests'));
     }
 
-    // 2. [QUAN TRỌNG] Hàm index này đang thiếu nên bị lỗi nè!
+    // 2. Danh sách mượn trả
     public function index()
     {
-        // Lấy danh sách phiếu mượn, sắp xếp mới nhất, phân trang 10 dòng
         $borrows = Borrow::with(['user', 'book'])->latest()->paginate(10);
-        
-        // Trả về view quản lý mượn trả
         return view('admin.borrows.index', compact('borrows'));
     }
 
@@ -42,7 +52,7 @@ class AdminController extends Controller
         return redirect()->back()->with('error', 'Lỗi trạng thái hoặc không tìm thấy!');
     }
 
-    // 4. Xử lý Hủy (Reject) - Trả lại số lượng sách vào kho
+    // 4. Xử lý Hủy (Reject)
     public function reject($id)
     {
         $borrow = Borrow::find($id);
@@ -55,13 +65,12 @@ class AdminController extends Controller
             if($book) {
                 $book->increment('quantity');
             }
-
-            return redirect()->back()->with('success', 'Đã hủy yêu cầu và hoàn sách vào kho!');
+            return redirect()->back()->with('success', 'Đã hủy yêu cầu!');
         }
         return redirect()->back()->with('error', 'Lỗi thao tác!');
     }
 
-    // 5. Xử lý Khách trả sách (Return) - Cộng lại số lượng sách
+    // 5. Xử lý Trả sách (Return)
     public function returnBook($id)
     {
         $borrow = Borrow::find($id);
@@ -75,8 +84,7 @@ class AdminController extends Controller
             if($book) {
                 $book->increment('quantity');
             }
-
-            return redirect()->back()->with('success', 'Xác nhận trả sách thành công!');
+            return redirect()->back()->with('success', 'Đã trả sách!');
         }
         return redirect()->back()->with('error', 'Lỗi thao tác!');
     }
