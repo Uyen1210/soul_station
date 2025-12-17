@@ -28,6 +28,8 @@ Route::get('/sach/{id}', [HomeController::class, 'detail'])->name('book.detail')
 Route::middleware(['auth'])->group(function () {
     Route::post('/borrow/{id}', [HomeController::class, 'borrow'])->name('book.borrow');
     Route::get('/lich-su', [HomeController::class, 'history'])->name('history');
+    Route::get('/profile', [HomeController::class, 'profile'])->name('profile');
+    Route::patch('/profile/update', [HomeController::class, 'updateProfile'])->name('profile.update');
 });
 
 
@@ -53,18 +55,21 @@ Route::middleware(['auth', 'verified', 'admin'])
         Route::resource('categories', CategoryController::class);
 
         // --- Quản lý Mượn/Trả sách (QUAN TRỌNG: Đã mở full chức năng) ---
-        
+    
         // 1. Xem danh sách (Thiếu cái này là không vào được trang)
         Route::get('/borrows', [AdminController::class, 'index'])->name('borrows.index');
-        
+
         // 2. Duyệt
         Route::post('/borrows/{id}/approve', [AdminController::class, 'approve'])->name('borrows.approve');
-        
+
         // 3. Hủy (Đã mở comment)
         Route::post('/borrows/{id}/reject', [AdminController::class, 'reject'])->name('borrows.reject');
-        
+
         // 4. Trả sách (Đã mở comment)
         Route::post('/borrows/{id}/return', [AdminController::class, 'returnBook'])->name('borrows.return');
+
+        // 5. Quản lý Tác giả
+        Route::resource('authors', \App\Http\Controllers\Admin\AuthorController::class);
     });
 
 

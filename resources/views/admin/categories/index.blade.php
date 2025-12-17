@@ -3,6 +3,25 @@
 @section('header', 'Quản lý Danh mục')
 
 @section('content')
+
+    {{-- === PHẦN THÊM MỚI: HIỂN THỊ THÔNG BÁO === --}}
+    <div class="mb-4">
+        @if(session('success'))
+            <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded shadow-sm" role="alert">
+                <p class="font-bold">Thành công!</p>
+                <p>{{ session('success') }}</p>
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded shadow-sm" role="alert">
+                <p class="font-bold">Lỗi!</p>
+                <p>{{ session('error') }}</p>
+            </div>
+        @endif
+    </div>
+    {{-- ========================================== --}}
+
     <div class="mb-6 flex justify-between items-center">
         <h1 class="text-2xl font-bold text-gray-700">Danh mục Sách</h1>
 
@@ -30,7 +49,7 @@
                     </th>
                     <th
                         class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Ngày tạo
+                        Số lượng sách
                     </th>
                     <th
                         class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
@@ -47,9 +66,15 @@
                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm font-medium">
                             {{ $category->name }}
                         </td>
+
+                        {{-- Hiển thị số lượng sách đang có trong danh mục --}}
                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                            {{ $category->created_at?->format('d/m/Y') }}
+                            <span
+                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $category->books_count > 0 ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800' }}">
+                                {{ $category->books_count ?? $category->books()->count() }} cuốn
+                            </span>
                         </td>
+
                         <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                             <form action="{{ route('admin.categories.destroy', $category) }}" method="POST"
                                 onsubmit="return confirm('Xóa danh mục này?')" style="display:inline-block;">

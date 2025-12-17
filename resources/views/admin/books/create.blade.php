@@ -71,14 +71,9 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Tác giả <span
                                     class="text-red-500">*</span></label>
-                            <select name="author_id"
-                                class="w-full border-gray-300 rounded-md shadow-sm focus:ring-amber-500 focus:border-amber-500 border p-2"
-                                required>
-                                <option value="">-- Chọn --</option>
-                                @foreach($authors as $author)
-                                    <option value="{{ $author->id }}" {{ old('author_id') == $author->id ? 'selected' : '' }}>
-                                        {{ $author->name }}
-                                    </option>
+                            <select name="author_id" class="...">
+                                @foreach(\App\Models\Author::all() as $author)
+                                    <option value="{{ $author->id }}">{{ $author->name }}</option>
                                 @endforeach
                             </select>
                         </div>

@@ -42,9 +42,17 @@ class CategoryController extends Controller
         return redirect()->route('categories.index')->with('success', 'Cập nhật thành công!');
     }
 
-    public function destroy(Category $category)
+    public function destroy($id)
     {
+        $category = Category::findOrFail($id);
+
+        // KIỂM TRA: Nếu danh mục này đang có sách -> Chặn không cho xóa
+        if ($category->books()->count() > 0) {
+            return back()->with('error', 'Không thể xóa! Danh mục này đang chứa sách.');
+        }
+
         $category->delete();
-        return redirect()->route('admin.categories.index')->with('success', 'Đã xóa danh mục!');
+
+        return back()->with('success', 'Xóa danh mục thành công!');
     }
 }

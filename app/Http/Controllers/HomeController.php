@@ -20,25 +20,25 @@ class HomeController extends Controller
         if ($request->filled('search')) {
             $keyword = $request->search;
 
-            $query->where(function($q) use ($keyword) {
+            $query->where(function ($q) use ($keyword) {
                 // 1. Tìm trong cột Tên sách
                 $q->where('title', 'LIKE', "%{$keyword}%")
-                
-                // 2. HOẶC tìm trong bảng Authors (dựa vào hàm author() bạn vừa khai báo)
-                  ->orWhereHas('author', function($qAuthor) use ($keyword) {
-                      $qAuthor->where('name', 'LIKE', "%{$keyword}%");
-                  })
-                  
-                // 3. HOẶC tìm trong bảng Categories (dựa vào hàm category() bạn vừa khai báo)
-                  ->orWhereHas('category', function($qCat) use ($keyword) {
-                      $qCat->where('name', 'LIKE', "%{$keyword}%");
-                  });
+
+                    // 2. HOẶC tìm trong bảng Authors (dựa vào hàm author() bạn vừa khai báo)
+                    ->orWhereHas('author', function ($qAuthor) use ($keyword) {
+                        $qAuthor->where('name', 'LIKE', "%{$keyword}%");
+                    })
+
+                    // 3. HOẶC tìm trong bảng Categories (dựa vào hàm category() bạn vừa khai báo)
+                    ->orWhereHas('category', function ($qCat) use ($keyword) {
+                        $qCat->where('name', 'LIKE', "%{$keyword}%");
+                    });
             });
         }
 
         // Lấy danh sách mới nhất + Phân trang 8 cuốn
         $books = $query->latest()->paginate(8);
-        
+
         // Giữ lại từ khóa trên thanh URL khi bấm chuyển trang
         $books->appends(['search' => $request->search]);
 
@@ -60,9 +60,9 @@ class HomeController extends Controller
         }
 
         $book = Book::find($id);
-        if($book->quantity > 0) {
+        if ($book->quantity > 0) {
             $book->decrement('quantity');
-            
+
             DB::table('borrows')->insert([
                 'user_id' => Auth::id(),
                 'book_id' => $id,
@@ -90,5 +90,37 @@ class HomeController extends Controller
             ->get();
 
         return view('history', compact('borrows'));
+    }
+
+    public function profile()
+    {
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+
+        $user = Auth::user();
+        return view('profile', compact('user'));
+    }
+
+    // 6. Xử lý cập nhật thông tin người dùng
+    public function updateProfile(Request $request)
+    {
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+
+        $user = Auth::user();
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'phone' => 'nullable|string|max:20', // Giả sử trường sdt là 'phone'
+            'address' => 'nullable|string|max:255', // Giả sử trường địa chỉ là 'address'
+            // Email không cho chỉnh sửa, hoặc nếu cho thì thêm validation unique
+            // 'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+        ]);
+
+        $user->update($request->only(['name', 'phone', 'address'])); // Cập nhật các trường cho phép
+
+        return redirect()->route('profile')->with('success', 'Thông tin đã được cập nhật thành công!');
     }
 }

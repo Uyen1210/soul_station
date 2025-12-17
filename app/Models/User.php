@@ -2,14 +2,13 @@
 
 namespace App\Models;
 
-// 1. QUAN TRỌNG: Thêm dòng này để gọi thư viện Factory
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    // 2. QUAN TRỌNG: Thêm "HasFactory" vào trong danh sách sử dụng
+
     use HasFactory, Notifiable;
 
     /**
@@ -21,8 +20,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'role',   // Đảm bảo có dòng này để Seeder chạy được
-        'status', // Đảm bảo có dòng này để Seeder chạy được
+        'role',
+        'status',
     ];
 
     /**

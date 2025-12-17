@@ -18,11 +18,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Tạo 1 tài khoản Admin
         User::factory()->create([
             'name' => 'Admin Hậu',
             'email' => 'admin@gmail.com',
-            'password' => bcrypt('12345678'), // Mật khẩu là 12345678
+            'password' => bcrypt('12345678'),
             'role' => 'admin',
             'status' => 'active',
         ]);
@@ -32,6 +31,14 @@ class DatabaseSeeder extends Seeder
             'email' => 'test@gmail.com',
             'password' => '00000000',
             'role' => 'admin',
+            'status' => 'active',
+        ]);
+
+        User::factory()->create([
+            'name' => 'User Test',
+            'email' => 'user@gmail.com',
+            'password' => '12345678',
+            'role' => 'user',
             'status' => 'active',
         ]);
 
@@ -54,7 +61,6 @@ class DatabaseSeeder extends Seeder
         ];
         Category::insert($categoriesData);
 
-        // Tạo 10 author giả (fix lỗi array_rand rỗng)
         $authorsData = [
             ['name' => 'J.K. Rowling'],
             ['name' => 'Dale Carnegie'],
