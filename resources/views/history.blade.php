@@ -22,6 +22,7 @@
                 </button>
             </form>
         </div>
+
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-3xl font-bold text-amber-800">📜 Lịch sử mượn sách</h1>
             <a href="/" class="text-amber-600 font-bold hover:underline">← Quay về trang chủ</a>
@@ -50,10 +51,25 @@
                         <td class="p-4">{{ $item->borrow_date }}</td>
                         <td class="p-4">{{ $item->due_date }}</td>
                         <td class="p-4">
-                            @if($item->status == 'borrowing' || $item->status == 'pending')
-                                <span class="bg-yellow-100 text-yellow-800 text-xs font-bold px-2 py-1 rounded">Đang mượn</span>
+                            {{-- PHẦN ĐÃ SỬA: Logic hiển thị trạng thái chuẩn --}}
+                            @if($item->status == 'pending')
+                                <span class="bg-yellow-100 text-yellow-800 text-xs font-bold px-2 py-1 rounded border border-yellow-300">
+                                    ⏳ Đang chờ duyệt
+                                </span>
+                            @elseif($item->status == 'borrowed' || $item->status == 'borrowing')
+                                <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2 py-1 rounded border border-blue-300">
+                                    📖 Đang mượn
+                                </span>
+                            @elseif($item->status == 'returned')
+                                <span class="bg-green-100 text-green-800 text-xs font-bold px-2 py-1 rounded border border-green-300">
+                                    ✅ Đã trả
+                                </span>
+                            @elseif($item->status == 'late')
+                                <span class="bg-red-100 text-red-800 text-xs font-bold px-2 py-1 rounded border border-red-300">
+                                    ⚠️ Quá hạn
+                                </span>
                             @else
-                                <span class="bg-green-100 text-green-800 text-xs font-bold px-2 py-1 rounded">Đã trả</span>
+                                <span class="text-gray-500 text-xs">{{ $item->status }}</span>
                             @endif
                         </td>
                     </tr>

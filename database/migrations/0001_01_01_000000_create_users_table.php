@@ -8,20 +8,23 @@ return new class extends Migration {
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
-        Schema::create('users', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->enum('role', ['user', 'admin'])->default('user');
-            $table->enum('status', ['active', 'blocked'])->default('active');
-            $table->rememberToken();
-            $table->timestamps();
-
-        });
+   public function up(): void
+{
+    Schema::create('users', function (Blueprint $table) {
+        $table->id();
+        $table->string('name');
+        $table->string('email')->unique();
+        $table->timestamp('email_verified_at')->nullable();
+        $table->string('password');
+        
+        // --- SỬA 2 DÒNG NÀY (Đổi enum thành string) ---
+        $table->string('role')->default('user');       // Thay vì enum(...)
+        $table->string('status')->default('active');   // Thay vì enum(...)
+        // ----------------------------------------------
+        
+        $table->rememberToken();
+        $table->timestamps();
+    });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();

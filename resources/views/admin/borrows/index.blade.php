@@ -19,21 +19,11 @@
         <table class="min-w-full leading-normal">
             <thead>
                 <tr>
-                    <th
-                        class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Người mượn</th>
-                    <th
-                        class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Sách</th>
-                    <th
-                        class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Ngày mượn</th>
-                    <th
-                        class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Trạng thái</th>
-                    <th
-                        class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Hành động</th>
+                    <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Người mượn</th>
+                    <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Sách</th>
+                    <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Ngày mượn</th>
+                    <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Trạng thái</th>
+                    <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Hành động</th>
                 </tr>
             </thead>
             <tbody>
@@ -56,9 +46,7 @@
                                 <span class="text-blue-600 font-bold">Đang mượn</span>
                             @elseif($borrow->status == 'returned')
                                 <span class="text-green-600 font-bold">Đã trả</span>
-                            @elseif($borrow->status == 'late')
-                                <span class="text-red-600 font-bold">Trễ hạn</span>
-                            @elseif($borrow->status == 'rejected') <!-- Thêm nếu cần -->
+                            @elseif($borrow->status == 'rejected')
                                 <span class="text-red-600 font-bold">Đã từ chối</span>
                             @endif
                         </td>
@@ -67,22 +55,17 @@
                                 @if($borrow->status == 'pending')
                                     <form action="{{ route('admin.borrows.approve', $borrow->id) }}" method="POST">
                                         @csrf
-                                        <button
-                                            class="text-green-600 hover:text-green-900 font-bold text-xs uppercase">Duyệt</button>
+                                        <button class="text-green-600 hover:text-green-900 font-bold text-xs uppercase">Duyệt</button>
                                     </form>
                                     <span class="text-gray-300">|</span>
                                     <form action="{{ route('admin.borrows.reject', $borrow->id) }}" method="POST">
                                         @csrf
-                                        <button class="text-red-600 hover:text-red-900 font-bold text-xs uppercase"
-                                            onclick="return confirm('Hủy yêu cầu này?')">Hủy</button>
+                                        <button class="text-red-600 hover:text-red-900 font-bold text-xs uppercase" onclick="return confirm('Hủy yêu cầu này?')">Hủy</button>
                                     </form>
-                                @elseif(in_array($borrow->status, ['borrowed', 'late']))
+                                @elseif($borrow->status == 'borrowed')
                                     <form action="{{ route('admin.borrows.return', $borrow->id) }}" method="POST">
                                         @csrf
-                                        <button class="text-blue-600 hover:text-blue-900 font-bold text-xs uppercase"
-                                            onclick="return confirm('Xác nhận đã nhận lại sách?')">
-                                            Khách trả sách
-                                        </button>
+                                        <button class="text-blue-600 hover:text-blue-900 font-bold text-xs uppercase" onclick="return confirm('Xác nhận trả sách?')">Khách trả sách</button>
                                     </form>
                                 @else
                                     <span class="text-gray-400 text-xs">Hoàn tất</span>
@@ -91,15 +74,10 @@
                         </td>
                     </tr>
                 @empty
-                    <tr>
-                        <td colspan="5" class="px-5 py-5 text-center text-gray-500 italic">Không có dữ liệu.</td>
-                    </tr>
+                    <tr><td colspan="5" class="px-5 py-5 text-center text-gray-500">Chưa có dữ liệu.</td></tr>
                 @endforelse
             </tbody>
         </table>
-
-        <div class="p-4">
-            {{ $borrows->links() }}
-        </div>
+        <div class="p-4">{{ $borrows->links() }}</div>
     </div>
 @endsection

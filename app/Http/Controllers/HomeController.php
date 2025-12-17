@@ -73,7 +73,7 @@ class HomeController extends Controller
                 'updated_at' => now(),
             ]);
 
-            return redirect()->route('history')->with('success', 'Đăng ký mượn thành công!');
+            return redirect()->route('history')->with('success', 'Đã gửi yêu cầu mượn thành công! Vui lòng chờ Admin duyệt.');
         } else {
             return back()->with('error', 'Sách này đã hết!');
         }
