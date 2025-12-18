@@ -7,7 +7,7 @@ use App\Models\Book;
 use App\Models\Category;
 use App\Models\Author;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage; // Dùng để xóa ảnh cũ
+use Illuminate\Support\Facades\Storage;
 
 class BookController extends Controller
 {
@@ -16,11 +16,9 @@ class BookController extends Controller
      */
     public function index()
     {
-        // Sử dụng Eager Loading (with) để lấy luôn thông tin Category và Author
-        // giúp giảm số lượng truy vấn database (tránh lỗi N+1 query)
         $books = Book::with(['category', 'author'])
-            ->latest() // Sắp xếp mới nhất trước
-            ->paginate(10); // Phân trang 10 cuốn
+            ->latest()
+            ->paginate(10);
 
         return view('admin.books.index', compact('books'));
     }
@@ -30,7 +28,6 @@ class BookController extends Controller
      */
     public function create()
     {
-        // Lấy danh sách danh mục và tác giả để hiển thị vào Select box
         $categories = Category::all();
         $authors = Author::all();
 
@@ -42,7 +39,6 @@ class BookController extends Controller
      */
     public function store(Request $request)
     {
-        // 1. Validate dữ liệu
         $request->validate([
             'title' => 'required|max:255',
             'category_id' => 'required|exists:categories,id',
@@ -56,14 +52,11 @@ class BookController extends Controller
             'quantity.integer' => 'Số lượng phải là số',
         ]);
 
-        // 2. Xử lý upload ảnh (nếu có)
         $imagePath = null;
         if ($request->hasFile('cover_image')) {
-            // Lưu vào thư mục: storage/app/public/books
             $imagePath = $request->file('cover_image')->store('books', 'public');
         }
 
-        // 3. Tạo sách mới
         Book::create([
             'title' => $request->title,
             'category_id' => $request->category_id,
@@ -95,7 +88,6 @@ class BookController extends Controller
     {
         $book = Book::findOrFail($id);
 
-        // 1. Validate
         $request->validate([
             'title' => 'required|max:255',
             'category_id' => 'required|exists:categories,id',
@@ -124,9 +116,6 @@ class BookController extends Controller
         return redirect()->route('admin.books.index')->with('success', 'Cập nhật sách thành công!');
     }
 
-    /**
-     * Xóa sách
-     */
     public function destroy($id)
     {
         $book = Book::findOrFail($id);

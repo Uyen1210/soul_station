@@ -54,8 +54,7 @@ Route::middleware(['auth', 'verified', 'admin'])
         // --- Quản lý Danh mục ---
         Route::resource('categories', CategoryController::class);
 
-        // --- Quản lý Mượn/Trả sách (QUAN TRỌNG: Đã mở full chức năng) ---
-    
+
         // 1. Xem danh sách (Thiếu cái này là không vào được trang)
         Route::get('/borrows', [AdminController::class, 'index'])->name('borrows.index');
 
